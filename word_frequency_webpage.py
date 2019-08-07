@@ -1,0 +1,1 @@
+free_5k_wordlist_url = 'https://www.wordfrequency.info/free.asp?s=y'

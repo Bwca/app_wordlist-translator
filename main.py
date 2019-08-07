@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import re
 import multitran
+import html_page_queries
+import word_frequency_webpage
 
 request_headers = {
     'Host': 'www.multitran.com',
@@ -15,9 +17,11 @@ request_headers = {
     'Upgrade-Insecure-Requests': '1'
 }
 
-multitran_response = multitran.get_query_response_page(
+multitran_response = html_page_queries.get_query_response_page(
     'https://www.multitran.com/', request_headers)
 parsed_page = BeautifulSoup(multitran_response, "html.parser")
 print(parsed_page)
 
 print(multitran.generate_get_request('test'))
+
+print(word_frequency_webpage.free_5k_wordlist_url)
