@@ -17,11 +17,24 @@ request_headers = {
     'Upgrade-Insecure-Requests': '1'
 }
 
+""" 
 multitran_response = html_page_queries.get_query_response_page(
     'https://www.multitran.com/', request_headers)
+    
 parsed_page = BeautifulSoup(multitran_response, "html.parser")
 print(parsed_page)
+ """
 
-print(multitran.generate_get_request('test'))
+url = multitran.generate_get_request('test')
+multitran_response = html_page_queries.get_query_response_page(url, request_headers)
+parsed_page = BeautifulSoup(multitran_response, "html.parser")
 
-print(word_frequency_webpage.free_5k_wordlist_url)
+print(url)
+
+results = parsed_page.find_all(title=True)
+
+for x in results:
+    xmatch = (re.search("(?:title=\")(.*)(?:\">)", str(x)))
+    if xmatch is not None:
+        print(xmatch.group(1))
+print (len(results))
