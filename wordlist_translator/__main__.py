@@ -20,13 +20,26 @@ def main():
 
     print(url)
 
-    results = parsed_page.find_all(title=True)
+    """ results = parsed_page.find_all(title=True)
 
     for x in results:
         xmatch = (re.search("(?:title=\")(.*)(?:\">)", str(x)))
         if xmatch is not None:
-            print(xmatch.group(1))
-    print(len(results))
+            print(xmatch.group(1)) """
+    # print(len(results))
+
+    subjects = parsed_page.find_all("td", "subj")
+    translations = parsed_page.find_all("td", "trans")
+    print(len(translations))
+    print(len(subjects))
+
+    print(subjects[0])
+
+    t = filter(lambda x: ';UserName=' not in x,
+               str(translations[0]).split('; '))
+
+    for x in t:
+        print(x)
 
 
 if __name__ == '__main__':
