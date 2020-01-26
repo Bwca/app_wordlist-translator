@@ -1,4 +1,4 @@
-def generate_get_request(word: str, source_language_id=1, target_language_id=2) -> str:
+def generate_multitran_translation_query(word: str, source_language_id=1, target_language_id=2) -> str:
     '''
     generate a query to m.exe on multitran.com
     language params:
