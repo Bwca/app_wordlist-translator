@@ -18,22 +18,29 @@ def main():
         url, REQUEST_HEADERS)
     parsed_page = BeautifulSoup(multitran_response, "html.parser")
 
-    print(url)
-
-    """ results = parsed_page.find_all(title=True)
-
-    for x in results:
-        xmatch = (re.search("(?:title=\")(.*)(?:\">)", str(x)))
-        if xmatch is not None:
-            print(xmatch.group(1)) """
-    # print(len(results))
-
     subjects = parsed_page.find_all("td", "subj")
     translations = parsed_page.find_all("td", "trans")
-    print(len(translations))
-    print(len(subjects))
 
-    print(subjects[0])
+    subj_trans_list = list(zip(subjects, translations))
+
+    no_user_subjects_list = list(filter(
+        lambda x: ';UserName=' not in x, subj_trans_list))
+
+    sub_trans_list = list(
+        map(lambda i: dict(sub=i[0], trans=list(filter(lambda x: ';UserName=' not in x, str(
+            i[1]).split('; ')))), no_user_subjects_list)
+    )
+
+    print(len(sub_trans_list))
+    print(sub_trans_list[0]['trans'])
+
+
+if __name__ == '__main__':
+    main()
+
+'''
+
+   print(subjects[0])
 
     t = filter(lambda x: ';UserName=' not in x,
                str(translations[0]).split('; '))
@@ -41,6 +48,4 @@ def main():
     for x in t:
         print(x)
 
-
-if __name__ == '__main__':
-    main()
+'''
