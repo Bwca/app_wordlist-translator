@@ -471,7 +471,7 @@ variable-naming-style=snake_case
 
 # Regular expression matching correct variable names. Overrides variable-
 # naming-style.
-variable-rgx=[a-zA-Z_][a-z0-9_]?{0,30}$
+variable-rgx=([a-z_][a-z0-9_]?)+$
 
 
 [CLASSES]

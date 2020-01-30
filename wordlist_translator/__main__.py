@@ -3,12 +3,12 @@ The main module executing the programme
 '''
 
 import re
+from typing import List
 from bs4 import BeautifulSoup
 from data_access import http_req
 from data_access.multitran_query_generator import generate_multitran_translation_query
 from constants.request_headers import REQUEST_HEADERS
 from models.translation_entry import TranslationEntry
-from typing import TypedDict, List
 
 
 def main():
@@ -16,10 +16,9 @@ def main():
     The one and only main function of the module
     '''
 
-    print(dictionary)
+  #  print(dictionary)
 
-
-"""     url = generate_multitran_translation_query('test')
+    url = generate_multitran_translation_query('test')
     multitran_response = http_req.get_query_response_page(
         url, REQUEST_HEADERS)
     parsed_page = BeautifulSoup(multitran_response, "html.parser")
@@ -37,10 +36,22 @@ def main():
             i[1]).split('; ')))), subjects_and_translations_without_user_subjects)
     )
 
-    print(len(subject_translations_dictionaries_list_without_user_translations))
-    print(
-        subject_translations_dictionaries_list_without_user_translations[0]['sub'])
- """
+    dictionary: List[TranslationEntry] = []
+
+    for item in subject_translations_dictionaries_list_without_user_translations:
+        topic = re.search('(?:title=")(.*)(?:">)', str(item['sub'])).group(1)
+        translation: List[str] = []
+        for trans in item['trans']:
+            meaning = re.search(
+                '(?:>)([^<]*)(?:<)', str(trans))
+            if meaning is not None:
+                translation.append(meaning.group(1))
+        dictionary.append(TranslationEntry(
+            subject=topic, translations=translation))
+
+    print(dictionary)
+    print(len(dictionary))
+
 
 if __name__ == '__main__':
     main()
