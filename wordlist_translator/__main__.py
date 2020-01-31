@@ -29,7 +29,7 @@ def main():
     zipped_subjects_and_translations = list(zip(subjects, translations))
 
     subjects_and_translations_without_user_subjects = list(filter(
-        lambda x: ';UserName=' not in x, zipped_subjects_and_translations))
+        lambda x: ';UserName=' not in str(x[0]), zipped_subjects_and_translations))
 
     subject_translations_dictionaries_list_without_user_translations = list(
         map(lambda i: dict(sub=i[0], trans=list(filter(lambda x: ';UserName=' not in x, str(
@@ -42,12 +42,13 @@ def main():
         topic = re.search('(?:title=")(.*)(?:">)', str(item['sub'])).group(1)
         translation: List[str] = []
         for trans in item['trans']:
-            meaning = re.search(
-                '(?:>)([^<]*)(?:<)', str(trans))
+            meaning = re.search('(?:<a href=.+>)(.+)(?:<\/a>)', str(trans))
             if meaning is not None:
                 translation.append(meaning.group(1))
         dictionary.append(TranslationEntry(
             subject=topic, translations=translation))
+
+    dictionary = list(filter(lambda x: len(x['translations']), dictionary))
 
     print(dictionary)
     print(len(dictionary))
