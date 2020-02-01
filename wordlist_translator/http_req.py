@@ -33,8 +33,8 @@ def is_good_response(resp) -> bool:
             and content_type.find('html') > -1)
 
 
-def log_error(e) -> None:
+def log_error(error) -> None:
     '''
     print out errors
     '''
-    print(e)
+    print(error)

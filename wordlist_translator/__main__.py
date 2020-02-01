@@ -2,57 +2,49 @@
 The main module executing the programme
 '''
 
-import re
+import json
 from typing import List
-from bs4 import BeautifulSoup
-from data_access import http_req
-from data_access.multitran_query_generator import generate_multitran_translation_query
-from constants.request_headers import REQUEST_HEADERS
-from models.translation_entry import TranslationEntry
+import os.path
+from multitran import get_word_translations
 
 
-def main():
+def load_words_from_file() -> None:
     '''
-    The one and only main function of the module
+    translated a file from give path
     '''
+    print('Enter a path to the files with words to be translated:')
+    path = str(input())
+    words = open(path, 'r').read().split('\n')
+    return [word for word in words if len(word)]
 
-  #  print(dictionary)
 
-    url = generate_multitran_translation_query('test')
-    multitran_response = http_req.get_query_response_page(
-        url, REQUEST_HEADERS)
-    parsed_page = BeautifulSoup(multitran_response, "html.parser")
+def translate_word_list(words: List) -> List:
+    '''
+    translate given list of words
+    '''
+    translations = []
+    for word in words:
+        dictionary_entries = get_word_translations(word)
+        translations.append(dict(word=word, translations=dictionary_entries))
+    return translations
 
-    subjects = parsed_page.find_all("td", "subj")
-    translations = parsed_page.find_all("td", "trans")
 
-    zipped_subjects_and_translations = list(zip(subjects, translations))
+def save_translations(translations: List) -> None:
+    '''
+    store obtained translations
+    '''
+    with open(os.path.join('results', 'translations.json'), 'w', encoding='utf-8') as file:
+        json.dump(translations, file, ensure_ascii=False, indent=4)
 
-    subjects_and_translations_without_user_subjects = list(filter(
-        lambda x: ';UserName=' not in str(x[0]), zipped_subjects_and_translations))
 
-    subject_translations_dictionaries_list_without_user_translations = list(
-        map(lambda i: dict(sub=i[0], trans=list(filter(lambda x: ';UserName=' not in x, str(
-            i[1]).split('; ')))), subjects_and_translations_without_user_subjects)
-    )
-
-    dictionary: List[TranslationEntry] = []
-
-    for item in subject_translations_dictionaries_list_without_user_translations:
-        topic = re.search('(?:title=")(.*)(?:">)', str(item['sub'])).group(1)
-        translation: List[str] = []
-        for trans in item['trans']:
-            meaning = re.search('(?:<a href=.+>)(.+)(?:<\/a>)', str(trans))
-            if meaning is not None:
-                translation.append(meaning.group(1))
-        dictionary.append(TranslationEntry(
-            subject=topic, translations=translation))
-
-    dictionary = list(filter(lambda x: len(x['translations']), dictionary))
-
-    print(dictionary)
-    print(len(dictionary))
+def translate_from_file() -> None:
+    '''
+    read a file and save translations
+    '''
+    words = load_words_from_file()
+    translations = translate_word_list(words)
+    save_translations(translations)
 
 
 if __name__ == '__main__':
-    main()
+    translate_from_file()
