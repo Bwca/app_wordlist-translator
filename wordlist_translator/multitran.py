@@ -52,10 +52,13 @@ def parse_translations_to_dictionary(zipped_html: List) -> List:
     for item in zipped_html:
         topic = re.search('(?:title=")(.*)(?:">)', str(item['sub'])).group(1)
         translation: List[str] = []
+
         for trans in item['trans']:
             meaning = re.search('(?:<a href=.+>)(.+)(?:<\\/a>)', str(trans))
+
             if meaning is not None:
                 translation.append(meaning.group(1))
+
         dictionary.append(TranslationEntry(
             subject=topic, translations=translation))
 
